@@ -198,6 +198,10 @@ class JSON::OnSteroids
     to_s
   end
 
+  def to_json(io : IO) : Nil
+    to_s(io)
+  end
+
   def inspect(io)
     io << "JSON::OnSteroids(dirty: #{dirty?.inspect})>" unless @parent
 
