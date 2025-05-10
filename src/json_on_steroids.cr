@@ -154,14 +154,16 @@ class JSON::OnSteroids
     Time.parse(@raw.as_s)
   end
 
-  private def escape(x)
+  private def escape(io, x)
     case x
     when String
-      x.to_json
+      x.to_json(io)
     when Time
-      "\"" + x.to_utc.to_s(UTC_ISO_FORMAT) + "\""
+      io << '"'
+      x.to_utc.to_s(io, UTC_ISO_FORMAT)
+      io << '"'
     else
-      x.to_s
+      x.to_s(io)
     end
   end
 
@@ -171,7 +173,7 @@ class JSON::OnSteroids
       io << '{'
       raw.each_with_index do |(k,v), index|
         io << ',' unless index == 0
-        io << escape(k)
+        escape(io, k)
         io << ':'
         v.inspect(io)
       end
@@ -180,13 +182,13 @@ class JSON::OnSteroids
       io << '['
       raw.each_with_index do |v, index|
         io << ',' unless index == 0
-        io << escape(v)
+        escape(io, v)
       end
       io << ']'
     when Nil
       io << "null"
     else
-      io << escape(raw)
+      escape(io, raw)
     end
   end
 
